@@ -6,8 +6,7 @@
 struct WinDesc
 {
 	wstring appName = L"DirectX App";
-	HINSTANCE instance = nullptr;
-	HWND hWnd = nullptr;
+	HINSTANCE hInstance = nullptr;
 	UINT width = 0;
 	UINT height = 0;
 };
@@ -18,10 +17,15 @@ public:
 	Window(const WinDesc& initDesc);
 	~Window();
 
+	WPARAM Run();
+
 private:
+	ATOM MyRegisterClass();
+
 	// 멤버 함수이기 때문에 static으로 선언 필수
 	// this를 넘기는 방법도 존재
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	WinDesc desc{};
+	HWND hWnd = nullptr;
 };
