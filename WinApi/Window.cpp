@@ -24,11 +24,41 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 		desc.hInstance,	// 창의 핸들을 통해 작동하는 방식. 이렇게 하면 창 안에서 웬만한 거는 추가 핸들 입력 없이 해결 가능
 		nullptr
 	);
+	assert(hWnd != nullptr);
+
+	RECT rect = { 0, 0, LONG(desc.width), LONG(desc.height)};
+
+	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, 0);
+
+	//GetSystemMetrics(SM_CXSCREEN);	// 화면 해상도의 x좌표
+	//GetSystemMetrics(SM_CYSCREEN);	// 화면 해상도의 y좌표
+
+	const int winWidth = int(rect.right - rect.left);
+	const int winHeight = int(rect.bottom - rect.top);
+
+	const int x = (GetSystemMetrics(SM_CXSCREEN) - winWidth) / 2;
+	const int y = (GetSystemMetrics(SM_CYSCREEN) - winHeight) / 2;
+
+	MoveWindow(
+		hWnd,
+		x,
+		y,
+		winWidth,
+		winHeight,
+		true	// 윈도우 페인트라는 메시지를 발생시킬지 여부
+	);
+
+	ShowWindow(hWnd, SW_SHOWNORMAL);	// 활성화시키고 끝
+	UpdateWindow(hWnd);
+
+	ShowCursor(true);
 }
 
 Window::~Window()
 {
-	// 윈도우 클래스 해제
+	// 윈도우 파괴
+	DestroyWindow(hWnd);
+	// 윈도우 클래스 등록 해제
 	UnregisterClassW(desc.appName.c_str(), desc.hInstance);
 }
 
@@ -38,7 +68,7 @@ ATOM Window::MyRegisterClass()
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.style = CS_HREDRAW | CS_VREDRAW;	// 수평, 수직 방향으로 크기 변경 시 다시 그리기
 	wcex.lpfnWndProc = WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
@@ -56,5 +86,39 @@ ATOM Window::MyRegisterClass()
 
 WPARAM Window::Run()
 {
-	return WPARAM();
+	MSG msg;
+	
+	while (true)
+	{
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+
+		}
+	}
+
+	return msg.wParam;	// 루프가 끝났다는 의미
 }
+
+LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_PAINT:	// 기본적으로 있어야 하는 그리기 메시지
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+		EndPaint(hWnd, &ps);
+	}
+	break;
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
