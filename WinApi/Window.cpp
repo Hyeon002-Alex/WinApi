@@ -60,6 +60,10 @@ Window::~Window()
 	DestroyWindow(hWnd);
 	// 윈도우 클래스 등록 해제
 	UnregisterClassW(desc.appName.c_str(), desc.hInstance);
+
+	// 어떤 상황에서도 스택 프레임은 해제가 되는 것이 보장되기 때문에
+	// 윈도우의 파괴와 윈도우 클래스 등록 해제가 보장
+	// 유니크 포인터로 윈도우를 관리하는 것이 안전
 }
 
 ATOM Window::MyRegisterClass()
@@ -92,6 +96,9 @@ WPARAM Window::Run()
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
+			if (msg.message == WM_QUIT)	// WM_QUIT을 활용한 무한루프 탈출
+				break;
+
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
@@ -112,13 +119,20 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
 		EndPaint(hWnd, &ps);
 	}
-	break;
-	case WM_CLOSE:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
 	return 0;
+	case WM_CLOSE:
+		if (MessageBox(hWnd, L"정말 종료하시겠습니까?", L"WindowAPI 종료", MB_OKCANCEL) == IDOK)
+		{
+			PostQuitMessage(0);	// wParam이 0인 WM_QUIT 메시지를 발생시킴
+			// 유니크 포인터로 윈도우를 저장했기 때문에, 스택이 해제될 때 메모리를 해제
+			// Run() 함수에서 QUIT이 발생해 루프가 종료되고 소멸자가 발생해 DESTROY 메시지 발생
+			// 따라서 QUIT이 DESTROY보다 먼저 발생
+			return 0;
+		}
+		return 0;
+	}
+
+	// 처리하고 있지 않는 모든 메시지는 기본 윈도우 프로시저에 전달
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
