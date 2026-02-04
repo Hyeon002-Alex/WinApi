@@ -101,7 +101,6 @@ WPARAM Window::Run()
 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-
 		}
 	}
 
@@ -110,29 +109,37 @@ WPARAM Window::Run()
 
 LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static POINT mousePos{};	// 계속 초기화되면 곤란하므로 static
+	static wstring mouseStr{};
+	static RECT mouseRect{ 5, 5, 110, 20 };	// (5,5)에서 시작해서 가로 105, 세로 15 크기
+
 	switch (message)
 	{
 	case WM_PAINT:	// 기본적으로 있어야 하는 그리기 메시지
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+		DrawText(hdc, mouseStr.c_str(), -1, &mouseRect, DT_LEFT);	// -1은 널 문자열이 나오기 전까지 자동으로 길이를 계산함
+
 		EndPaint(hWnd, &ps);
 	}
 	return 0;
+	case WM_MOUSEMOVE:
+	{
+		mousePos.x = GET_X_LPARAM(lParam);
+		mousePos.y = GET_Y_LPARAM(lParam);
+		mouseStr = L"X : " + to_wstring(mousePos.x) + L" Y : " + to_wstring(mousePos.y);
+
+		InvalidateRect(hWnd, &mouseRect, TRUE);	// 지정된 영역을 무효화시켜 다시 그리도록 함. TRUE면 원래 자리에 있던 것을 지우고 다시 그림
+	}
+	return 0;
 	case WM_CLOSE:
-		if (MessageBox(hWnd, L"정말 종료하시겠습니까?", L"WindowAPI 종료", MB_OKCANCEL) == IDOK)
-		{
-			PostQuitMessage(0);	// wParam이 0인 WM_QUIT 메시지를 발생시킴
-			// 유니크 포인터로 윈도우를 저장했기 때문에, 스택이 해제될 때 메모리를 해제
-			// Run() 함수에서 QUIT이 발생해 루프가 종료되고 소멸자가 발생해 DESTROY 메시지 발생
-			// 따라서 QUIT이 DESTROY보다 먼저 발생
-			return 0;
-		}
-		return 0;
+	{
+		PostQuitMessage(0);
+	}
+	return 0;
 	}
 
 	// 처리하고 있지 않는 모든 메시지는 기본 윈도우 프로시저에 전달
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
