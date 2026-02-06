@@ -3,11 +3,22 @@
   <ItemGroup>
     <ClInclude Include="targetver.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Systems\Window.h" />
+    <ClInclude Include="Utils\GDIUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Systems\Window.cpp" />
+    <ClCompile Include="Utils\GDIUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{d096716e-bf6e-416a-9cbf-253473823bf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
