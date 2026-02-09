@@ -285,4 +285,5 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	// 처리하고 있지 않는 모든 메시지는 기본 윈도우 프로시저에 전달
 	return DefWindowProc(hWnd, message, wParam, lParam);
+
 }
