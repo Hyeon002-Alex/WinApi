@@ -151,6 +151,9 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Systems\Window.h" />
     <ClInclude Include="Utils\GDIUtils.h" />
+    <ClInclude Include="Systems\Time.h" />
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="Utils\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -160,6 +163,8 @@
     </ClCompile>
     <ClCompile Include="Systems\Window.cpp" />
     <ClCompile Include="Utils\GDIUtils.cpp" />
+    <ClCompile Include="Systems\Time.cpp" />
+    <ClCompile Include="Program.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

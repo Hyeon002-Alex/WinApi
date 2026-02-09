@@ -10,8 +10,24 @@
 #include <cassert>
 #include <string>
 #include <memory>
+#include <chrono>
 
 using namespace std;
 
 constexpr UINT WIN_DEFAULT_WIDTH = 1280;
 constexpr UINT WIN_DEFAULT_HEIGHT = 720;
+
+#define DECLARE_SINGLETON(CLASS_NAME)				\
+private:											\
+CLASS_NAME();										\
+~CLASS_NAME();										\
+CLASS_NAME(const CLASS_NAME&) = delete;				\
+CLASS_NAME operator=(const CLASS_NAME&) = delete;	\
+CLASS_NAME(CLASS_NAME&&) = delete;					\
+CLASS_NAME& operator=(CLASS_NAME&&) = delete;		\
+public:												\
+static CLASS_NAME& Get()								\
+{													\
+	static CLASS_NAME instance;						\
+	return instance;								\
+}

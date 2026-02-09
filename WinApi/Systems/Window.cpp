@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "Window.h"
 #include "Utils/GDIUtils.h"
+#include "Program.h"
+
+// 외부에서 초기화 필수
+// make_unique : 프로그램이 시작할 때부터 program이 동적 할당된다는 것. 생성자에서 다른 객체와 상호작용하는 과정에서 초기화 순서 관련해서 꼬일 수도 있음
+// 싱글턴 : 싱글턴은 전역변수 같은 것. 다른 데서 쓰기위해 사용. program은 다른 곳이 아닌 Window.cpp 안에서만 사용되면 됨
+// 하지만 일단 초기화는 해야하기 때문에, 일단 nullptr로 초기화하고, make_unique 시기는 뒤로 조절
+unique_ptr<Program> Window::program = nullptr;
 
 Window::Window(const WinDesc& initDesc) : desc(initDesc)
 {
@@ -285,5 +292,4 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	// 처리하고 있지 않는 모든 메시지는 기본 윈도우 프로시저에 전달
 	return DefWindowProc(hWnd, message, wParam, lParam);
-
 }
