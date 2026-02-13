@@ -19,6 +19,7 @@
 #include <memory>
 #include <chrono>
 #include <iostream>
+#include <array>
 
 using namespace std;
 
@@ -41,6 +42,14 @@ static CLASS_NAME& Get()							\
 }
 
 extern HDC gHDC;
+#include "Utils/Vector.h"
+#include "Utils/GDIUtils.h"
 
 #include "Systems/Time.h"
+#include "Systems/Input.h"
 #define TIME Time::Get()
+#define INPUT Input::Get()
+
+constexpr float CENTER_X = WIN_DEFAULT_WIDTH * 0.5f;
+constexpr float CENTER_Y = WIN_DEFAULT_HEIGHT * 0.5f;
+constexpr Vector2 CENTER = Vector2(CENTER_X, CENTER_Y);

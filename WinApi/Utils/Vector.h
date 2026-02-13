@@ -7,11 +7,11 @@ struct Vector2
 	float y;
 
 	// 생성자
-	Vector2() : Vector2(0.0f, 0.0f) {}	// 위임생성
-	Vector2(float x, float y) : x(x), y(y) {}
-	Vector2(int x, int y) : Vector2(static_cast<float>(x), static_cast<float>(y)) {}
-	Vector2(int x, float y) : Vector2(static_cast<float>(x), y) {}
-	Vector2(float x, int y) : Vector2(x, static_cast<float>(y)) {}
+	constexpr Vector2() : Vector2(0.0f, 0.0f) {}	// 위임생성
+	constexpr Vector2(float x, float y) : x(x), y(y) {}
+	constexpr Vector2(int x, int y) : Vector2(static_cast<float>(x), static_cast<float>(y)) {}
+	constexpr Vector2(int x, float y) : Vector2(static_cast<float>(x), y) {}
+	constexpr Vector2(float x, int y) : Vector2(x, static_cast<float>(y)) {}
 
 	// 연산자
 	Vector2 operator+(Vector2 other) const

@@ -3,6 +3,12 @@
 
 namespace GDIUtils
 {
+	void SetRectCentered(Vector2 position, Vector2 scale, RECT& rect)
+	{
+		rect = { LONG(position.x - scale.x * 0.5f), LONG(position.y - scale.y * 0.5f),
+				LONG(position.x + scale.x * 0.5f), LONG(position.y + scale.y * 0.5f), };
+	}
+
 	void DrawRect(HDC hdc, const RECT& r)
 	{
 		Rectangle(hdc, r.left, r.top, r.right, r.bottom);

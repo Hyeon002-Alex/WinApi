@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Window.h"
-#include "Utils/GDIUtils.h"
 #include "Program.h"
 
 HDC gHDC = nullptr;
@@ -155,6 +154,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 	{
 		TIME.Update();
+		INPUT.Update();
 		program->Update();
 
 		// WM_PAINT를 클라이언트 영역 전체에서 발생
@@ -194,6 +194,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Render 진행
 		// 정석적인 방법은 의존성 주입으로 hdc를 집어넣는 것
 		// 하지만 우선은 전역변수로 처리
+		if(program)
 		program->Render();
 
 		EndPaint(hWnd, &ps);	// EndPaint() 밖에서는 hdc가 유효하지 않음
