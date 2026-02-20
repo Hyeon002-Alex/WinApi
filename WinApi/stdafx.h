@@ -26,6 +26,8 @@ using namespace std;
 constexpr UINT WIN_DEFAULT_WIDTH = 1280;
 constexpr UINT WIN_DEFAULT_HEIGHT = 720;
 
+constexpr float EPSILON = 0.00001f;
+
 #define DECLARE_SINGLETON(CLASS_NAME)				\
 private:											\
 CLASS_NAME();										\
@@ -48,6 +50,7 @@ extern HDC gHDC;
 #include "Systems/Time.h"
 #include "Systems/Input.h"
 #define TIME Time::Get()
+#define DELTA TIME.GetDeltaTime()
 #define INPUT Input::Get()
 
 constexpr float CENTER_X = WIN_DEFAULT_WIDTH * 0.5f;
