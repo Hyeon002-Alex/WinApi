@@ -32,3 +32,29 @@ void Rect::Move(Vector2 dir, float speed, float deltaTime)
 	// 이 구조에서는 여러번 호출시키기 때문에 오버헤드가 불필요하게 발생
 	// 아니면 한 프레임에서 프로그램이 시작할 때 한 번만 deltaTime을 가져오는 방법도 있음
 }
+
+bool Rect::CheckIntersect(const Rect& other) const
+{
+	bool isIntersecting = false;
+
+	if( (rect.left < other.rect.right) && (rect.right > other.rect.left) &&
+		(rect.top < other.rect.bottom) && (rect.bottom > other.rect.top))
+	{
+		isIntersecting = true;
+	}
+
+	return isIntersecting;
+}
+
+bool Rect::CheckIntersect(Vector2 position) const
+{
+	bool isIntersecting = false;
+
+	if( (rect.left < position.x) && (rect.right > position.x) &&
+		(rect.top < position.y) && (rect.bottom > position.y))
+	{
+		isIntersecting = true;
+	}
+
+	return isIntersecting;
+}

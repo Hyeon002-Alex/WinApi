@@ -20,6 +20,7 @@ public:
 	bool GetKeyDown(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_DOWN; }
 	bool GetKeyUP(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_UP; }
 	bool GetKeyPress(unsigned char key) const { return keyState[key]; }
+	Vector2 GetMousePos() const;
 
 private:
 	array<unsigned char, MAX_INPUT_KEY> keyState{};

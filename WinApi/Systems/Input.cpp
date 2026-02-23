@@ -38,3 +38,14 @@ void Input::Update()
 		}
 	}
 }
+
+Vector2 Input::GetMousePos() const
+{
+	// 마우스가 눌리면 마우스의 좌표를 얻어옴
+	POINT point;
+
+	GetCursorPos(&point);
+	Vector2 pos = Vector2(static_cast<float>(point.x), static_cast<float>(point.y));
+
+	return pos;
+}

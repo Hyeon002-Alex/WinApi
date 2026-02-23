@@ -13,6 +13,13 @@ public:
 
 	void SetColor(COLORREF color) { this->color = color; }
 
+	bool CheckIntersect(const Rect& other) const;	// 단일 책임 원칙 위반. 충돌 체크를 해주는 컴포넌트를 따로 만들어야 함. 이 때는 Rect가 아닌 다른 오브젝트의 콜라이더 사용
+	bool CheckIntersect(Vector2 position) const;
+
+	Vector2 GetPosition() const { return position; }
+	Vector2 GetScale() const { return scale; }
+	void SetPosition(Vector2 position) { this->position = position; }
+
 private:
 	RECT rect{};	// 그려질 영역
 
