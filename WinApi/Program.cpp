@@ -22,13 +22,13 @@ void Program::Update()
 	const auto& input = INPUT;
 
 	// 마우스의 좌표
-	Vector2 mousePos;
+	const Vector2 mousePos = input.GetMousePos();
 
 	if (input.GetKeyPress('W')) { dir.y -= 1.0f; }
 	if (input.GetKeyPress('S')) { dir.y += 1.0f; }
 	if (input.GetKeyPress('A')) { dir.x -= 1.0f; }
 	if (input.GetKeyPress('D')) { dir.x += 1.0f; }
-	if (input.GetKeyPress(1)) { mousePos = input.GetMousePos(); }
+	//if (input.GetKeyPress(1)) { mousePos = input.GetMousePos(); }
 
 	dir.Normalize();
 	rect1->Move(dir, speed, dt);
@@ -36,7 +36,26 @@ void Program::Update()
 	rect1->Update();
 	rect2->Update();
 
-	if (rect1->CheckIntersect(*rect2))
+	if (INPUT.GetKeyDown(VK_LBUTTON))
+	{
+		if (rect2->CheckIntersect(mousePos))
+		{
+			isDragging = true;
+		}
+	}
+
+	if (input.GetKeyUP(VK_LBUTTON))
+	{
+		isDragging = false;
+	}
+
+	if (isDragging)
+	{
+		rect2->SetColor(RGB(255, 0, 255));
+		rect2->SetPosition(mousePos);
+	}
+
+	/*if (rect1->CheckIntersect(*rect2))
 	{
 		rect1->SetColor(RGB(0, 255, 255));
 		rect2->SetColor(RGB(255, 255, 0));
@@ -51,7 +70,7 @@ void Program::Update()
 	{
 		rect2->SetPosition(mousePos);
 		rect2->SetColor(RGB(255, 0, 255));
-	}
+	}*/
 }
 
 void Program::Render()

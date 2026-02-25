@@ -35,7 +35,7 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 	);
 	assert(hWnd != nullptr);
 
-	INPUT.SetWindowHandle(hWnd);	// Input 클래스에서 ScreenToClient() 함수를 사용하기 위해 윈도우 핸들을 전달
+	//INPUT.SetWindowHandle(hWnd);	// Input 클래스에서 ScreenToClient() 함수를 사용하기 위해 윈도우 핸들을 전달
 
 	RECT rect = { 0, 0, LONG(desc.width), LONG(desc.height)};
 
@@ -102,6 +102,7 @@ ATOM Window::MyRegisterClass()
 WPARAM Window::Run()
 {
 	program = make_unique<Program>();
+	INPUT.Init(hWnd);
 
 	MSG msg;
 	

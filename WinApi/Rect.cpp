@@ -35,6 +35,7 @@ void Rect::Move(Vector2 dir, float speed, float deltaTime)
 
 bool Rect::CheckIntersect(const Rect& other) const
 {
+	/*
 	bool isIntersecting = false;
 
 	if( (rect.left < other.rect.right) && (rect.right > other.rect.left) &&
@@ -44,11 +45,17 @@ bool Rect::CheckIntersect(const Rect& other) const
 	}
 
 	return isIntersecting;
+	*/
+
+	return (rect.left <= other.rect.right &&
+		rect.right >= other.rect.left &&
+		rect.top <= other.rect.bottom &&
+		rect.bottom >= other.rect.top);
 }
 
 bool Rect::CheckIntersect(Vector2 position) const
 {
-	bool isIntersecting = false;
+	/*bool isIntersecting = false;
 
 	if( (rect.left < position.x) && (rect.right > position.x) &&
 		(rect.top < position.y) && (rect.bottom > position.y))
@@ -56,5 +63,9 @@ bool Rect::CheckIntersect(Vector2 position) const
 		isIntersecting = true;
 	}
 
-	return isIntersecting;
+	return isIntersecting;*/
+	return (rect.left <= position.x &&
+		rect.right >= position.x &&
+		rect.top <= position.y &&
+		rect.bottom >= position.y);
 }

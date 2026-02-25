@@ -7,6 +7,7 @@ Input::~Input() {}
 
 void Input::Update()
 {
+	if (hWnd == nullptr)	return;
 	keyOldState = keyState;	// 이전 프레임의 상태 정보를 넣어 놓음
 
 	// data() : 시작점의 주소 반환
@@ -37,8 +38,15 @@ void Input::Update()
 				map = KEY_INPUT_STATUS_NONE;
 		}
 	}
+
+	POINT pt;
+	GetCursorPos(&pt);	// 화면 전체 기준에서의 마우스 좌표계
+	ScreenToClient(hWnd, &pt);
+
+	mousePos = Vector2(pt);
 }
 
+/*
 Vector2 Input::GetMousePos() const
 {
 	// 마우스가 눌리면 마우스의 좌표를 얻어옴
@@ -56,3 +64,4 @@ Vector2 Input::GetMousePos() const
 
 	return pos;
 }
+*/

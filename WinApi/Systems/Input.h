@@ -16,18 +16,24 @@ class Input
 
 public:
 	void Update();
-
-	void SetWindowHandle(HWND handle) { hWnd = handle; }
+	void Init(HWND hWnd) { this->hWnd = hWnd; }
 
 	bool GetKeyDown(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_DOWN; }
 	bool GetKeyUP(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_UP; }
 	bool GetKeyPress(unsigned char key) const { return keyState[key]; }
-	Vector2 GetMousePos() const;
+
+	Vector2 GetMousePos() const { return mousePos; }
+
+	//void SetWindowHandle(HWND handle) { hWnd = handle; }
+	//Vector2 GetMousePos() const;
 
 private:
 	array<unsigned char, MAX_INPUT_KEY> keyState{};
 	array<unsigned char, MAX_INPUT_KEY> keyOldState{};
 	array<unsigned char, MAX_INPUT_KEY> keyMap{};
 
-	HWND hWnd = nullptr;	// ScreenToClient() 함수를 사용하기 위해 필요. Window.cpp에서 초기화
+	Vector2 mousePos{};
+	HWND hWnd = nullptr;
+
+	//HWND hWnd = nullptr;	// ScreenToClient() 함수를 사용하기 위해 필요. Window.cpp에서 초기화
 };
