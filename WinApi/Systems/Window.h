@@ -28,4 +28,6 @@ private:
 
 	WinDesc desc{};
 	HWND hWnd = nullptr;
+
+	static unique_ptr<class Program> program;
 };

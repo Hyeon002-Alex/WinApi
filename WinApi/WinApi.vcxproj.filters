@@ -7,6 +7,13 @@
     <ClInclude Include="Utils\GDIUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Systems\Time.h" />
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="Utils\Vector.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\Input.h" />
+    <ClInclude Include="Rect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -15,6 +22,10 @@
     <ClCompile Include="Utils\GDIUtils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Systems\Time.cpp" />
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Systems\Input.cpp" />
+    <ClCompile Include="Rect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utils">
