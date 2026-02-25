@@ -9,13 +9,15 @@ class Input
 	enum
 	{
 		KEY_INPUT_STATUS_NONE = 0,
-		KEY_INPUT_STATUS_DOWN,	// ÀÌÀü ÇÁ·¹ÀÓ x ÇöÀç ÇÁ·¹ÀÓ o
-		KEY_INPUT_STATUS_UP,	// ÀÌÀü ÇÁ·¹ÀÓ o ÇöÀç ÇÁ·¹ÀÓ x
-		KEY_INPUT_STATUS_PRESS,	// ÀÌÀü ÇÁ·¹ÀÓ o ÇöÀç ÇÁ·¹ÀÓ o
+		KEY_INPUT_STATUS_DOWN,	// ì´ì „ í”„ë ˆì„ x í˜„ì¬ í”„ë ˆì„ o
+		KEY_INPUT_STATUS_UP,	// ì´ì „ í”„ë ˆì„ o í˜„ì¬ í”„ë ˆì„ x
+		KEY_INPUT_STATUS_PRESS,	// ì´ì „ í”„ë ˆì„ o í˜„ì¬ í”„ë ˆì„ o
 	};
 
 public:
 	void Update();
+
+	void SetWindowHandle(HWND handle) { hWnd = handle; }
 
 	bool GetKeyDown(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_DOWN; }
 	bool GetKeyUP(unsigned char key) const { return keyMap[key] == KEY_INPUT_STATUS_UP; }
@@ -26,4 +28,6 @@ private:
 	array<unsigned char, MAX_INPUT_KEY> keyState{};
 	array<unsigned char, MAX_INPUT_KEY> keyOldState{};
 	array<unsigned char, MAX_INPUT_KEY> keyMap{};
+
+	HWND hWnd = nullptr;	// ScreenToClient() í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”. Window.cppì—ì„œ ì´ˆê¸°í™”
 };
