@@ -20,39 +20,11 @@
 #include <chrono>
 #include <iostream>
 #include <array>
-
-using namespace std;
+#include <functional>
 
 constexpr UINT WIN_DEFAULT_WIDTH = 1280;
 constexpr UINT WIN_DEFAULT_HEIGHT = 720;
 
-constexpr float EPSILON = 0.00001f;
 
-#define DECLARE_SINGLETON(CLASS_NAME)				\
-private:											\
-CLASS_NAME();										\
-~CLASS_NAME();										\
-CLASS_NAME(const CLASS_NAME&) = delete;				\
-CLASS_NAME operator=(const CLASS_NAME&) = delete;	\
-CLASS_NAME(CLASS_NAME&&) = delete;					\
-CLASS_NAME& operator=(CLASS_NAME&&) = delete;		\
-public:												\
-static CLASS_NAME& Get()							\
-{													\
-	static CLASS_NAME instance;						\
-	return instance;								\
-}
-
-extern HDC gHDC;
-#include "Utils/Vector.h"
-#include "Utils/GDIUtils.h"
-
-#include "Systems/Time.h"
-#include "Systems/Input.h"
-#define TIME Time::Get()
-#define DELTA TIME.GetDeltaTime()
-#define INPUT Input::Get()
-
-constexpr float CENTER_X = WIN_DEFAULT_WIDTH * 0.5f;
-constexpr float CENTER_Y = WIN_DEFAULT_HEIGHT * 0.5f;
-constexpr Vector2 CENTER = Vector2(CENTER_X, CENTER_Y);
+constexpr float WIN_CENTER_X = WIN_DEFAULT_WIDTH * 0.5f;
+constexpr float WIN_CENTER_Y = WIN_DEFAULT_HEIGHT * 0.5f;

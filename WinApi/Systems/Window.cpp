@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Window.h"
-#include "Program.h"
+#include "Game/Program.h"
 
 HDC gHDC = nullptr;
 
@@ -10,19 +10,40 @@ HDC gHDC = nullptr;
 // 하지만 일단 초기화는 해야하기 때문에, 일단 nullptr로 초기화하고, make_unique 시기는 뒤로 조절
 unique_ptr<Program> Window::program = nullptr;
 
-Window::Window(const WinDesc& initDesc) : desc(initDesc)
+Window::Window(const WinDesc& initDesc) : m_desc(initDesc)
+{
+	
+}
+
+Window::~Window()
+{
+	// 윈도우 파괴
+	DestroyWindow(m_hWnd);
+	// 윈도우 클래스 등록 해제
+	UnregisterClassW(m_desc.appName.c_str(), m_desc.hInstance);
+
+	// 어떤 상황에서도 스택 프레임은 해제가 되는 것이 보장되기 때문에
+	// 윈도우의 파괴와 윈도우 클래스 등록 해제가 보장
+	// 유니크 포인터로 윈도우를 관리하는 것이 안전
+}
+
+bool Window::Initialize()
 {
 	// 윈도우 클래스 등록
 	ATOM classId = MyRegisterClass();	// ATOM은 WORD와 같음. unsigned short. 2바이트
-	assert(classId != 0);	// 등록 실패
+	if (classId == 0)
+	{
+		assert(false && "MyRegisterClass FAILED");
+		return false;
+	}
 	// WORD는 과거 cpu가 한 번에 처리할 수 있는 데이터 크기 단위. cpu 레지스터가 16비트였던 시절. 온갖 데이터를 담음
 	// ATOM은 더 이상 쪼갤 수 없는 단위를 나타냈었음. 윈도우 운영체제가 관리하는 문자열 해시맵에 대한 검색키
 
-	hWnd = CreateWindowExW
+	m_hWnd = CreateWindowExW
 	(
 		WS_EX_APPWINDOW,
-		desc.appName.c_str(),
-		desc.appName.c_str(),
+		m_desc.appName.c_str(),
+		m_desc.appName.c_str(),
 		WS_OVERLAPPEDWINDOW,	// 최상위창 옵션
 		CW_USEDEFAULT,	// 게임에서 위치나 사이즈는 그래픽으로 그리면 해결
 		CW_USEDEFAULT,
@@ -30,17 +51,18 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 		CW_USEDEFAULT,
 		nullptr,
 		(HMENU)nullptr,
-		desc.hInstance,	// 창의 핸들을 통해 작동하는 방식. 이렇게 하면 창 안에서 웬만한 거는 추가 핸들 입력 없이 해결 가능
-		nullptr
+		m_desc.hInstance,	// 창의 핸들을 통해 작동하는 방식. 이렇게 하면 창 안에서 웬만한 거는 추가 핸들 입력 없이 해결 가능
+		this	// this*를 전달하기 위한 용도. 메시지 처리 과정에서 this*가 lParam으로 전달
 	);
-	assert(hWnd != nullptr);
+	if (m_hWnd == nullptr)
+	{
+		assert(false && "CreateWindowExW FAILED");
+		return false;
+	}
 
-	RECT rect = { 0, 0, LONG(desc.width), LONG(desc.height)};
+	RECT rect = { 0, 0, LONG(m_desc.width), LONG(m_desc.height) };
 
 	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, 0);
-
-	//GetSystemMetrics(SM_CXSCREEN);	// 화면 해상도의 x좌표
-	//GetSystemMetrics(SM_CYSCREEN);	// 화면 해상도의 y좌표
 
 	const int winWidth = int(rect.right - rect.left);
 	const int winHeight = int(rect.bottom - rect.top);
@@ -49,7 +71,7 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 	const int y = (GetSystemMetrics(SM_CYSCREEN) - winHeight) / 2;
 
 	MoveWindow(
-		hWnd,
+		m_hWnd,
 		x,
 		y,
 		winWidth,
@@ -57,22 +79,20 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 		true	// 윈도우 페인트라는 메시지를 발생시킬지 여부
 	);
 
-	ShowWindow(hWnd, SW_SHOWNORMAL);	// 활성화시키고 그려짐. WM_PAINT 발생
-	UpdateWindow(hWnd);					// WM_PAINT를 즉각적으로 처리하라
+	ShowWindow(m_hWnd, SW_SHOWNORMAL);	// 활성화시키고 그려짐. WM_PAINT 발생
+	UpdateWindow(m_hWnd);					// WM_PAINT를 즉각적으로 처리하라
 
 	ShowCursor(true);
+
+	return true;	// 전부다 초기화되었다는 의미
 }
 
-Window::~Window()
+void Window::ClearBackBuffer()
 {
-	// 윈도우 파괴
-	DestroyWindow(hWnd);
-	// 윈도우 클래스 등록 해제
-	UnregisterClassW(desc.appName.c_str(), desc.hInstance);
+}
 
-	// 어떤 상황에서도 스택 프레임은 해제가 되는 것이 보장되기 때문에
-	// 윈도우의 파괴와 윈도우 클래스 등록 해제가 보장
-	// 유니크 포인터로 윈도우를 관리하는 것이 안전
+void Window::Present()
+{
 }
 
 ATOM Window::MyRegisterClass()
@@ -81,17 +101,17 @@ ATOM Window::MyRegisterClass()
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style = CS_HREDRAW | CS_VREDRAW;	// 수평, 수직 방향으로 크기 변경 시 다시 그리기
+	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// 수평, 수직 방향으로 크기 변경 시 다시 그리기
 	wcex.lpfnWndProc = WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-	wcex.hInstance = desc.hInstance;
+	wcex.hInstance = m_desc.hInstance;
 	wcex.hIcon = LoadIcon(nullptr, IDI_WINLOGO);	// nullptr이면 기본이 들어감. 아이콘은 작업표시줄에 보이는 아이콘
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);	// 프로그램 내부에서 보일 마우스 커서. 게임에서는 그래픽으로 그려서 사용
 	wcex.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);	// 윈도우 창의 기본 색상. 클라이언트 영역의 배경색
 																// os의 gdi를 사용해 그리는 방식.
 	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = desc.appName.c_str();	// wstring에 대한 c스타일의 롱포인터 요구. .c_str()으로 변환 .data()의 방식과 비슷
+	wcex.lpszClassName = m_desc.appName.c_str();	// wstring에 대한 c스타일의 롱포인터 요구. .c_str()으로 변환 .data()의 방식과 비슷
 	wcex.hIconSm = wcex.hIcon;	// 윈도우 창 좌측 상단에 보이는 아이콘. 작업표시줄 아이콘과 동일하게 설정
 
 	return RegisterClassExW(&wcex);
@@ -100,13 +120,13 @@ ATOM Window::MyRegisterClass()
 WPARAM Window::Run()
 {
 	program = make_unique<Program>();
-	INPUT.Init(hWnd);
+	INPUT.Init(m_hWnd);
 
 	MSG msg;
 	
-	SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);	// 핸들, z오더, 위치-크기, 플래그
-	SetForegroundWindow(hWnd);	// 최상단 표시권한. Focus와 비슷. 시각적으로 위로 끌어올리라는 의미
-	SetFocus(hWnd);				// 포커스를 주라는 의미. 논리적 해결. 보통 둘 중 하나만 해도 해결이 됨
+	SetWindowPos(m_hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);	// 핸들, z오더, 위치-크기, 플래그
+	SetForegroundWindow(m_hWnd);	// 최상단 표시권한. Focus와 비슷. 시각적으로 위로 끌어올리라는 의미
+	SetFocus(m_hWnd);				// 포커스를 주라는 의미. 논리적 해결. 보통 둘 중 하나만 해도 해결이 됨
 
 	while (true)
 	{
@@ -126,51 +146,21 @@ WPARAM Window::Run()
 	return msg.wParam;	// 루프가 끝났다는 의미
 }
 
-LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Window::WndProc(HWND m_hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	Window* window = nullptr;
+
 	switch (message)
 	{
-	case WM_CREATE:	// 윈도우 창을 생성할 때 발생하는 메시지. 생성자 같은 느낌. 시간차가 아얘 없지는 않음. 여러 것들을 초기화하는 용도
-	{
-		SetTimer(hWnd, 1, USER_TIMER_MINIMUM, nullptr);	// 윈도우 핸들, 이벤트 아이디, 어느정도 흘렀을 때 메시지를 발생 시킬 것인지, 메시지가 발생했을 때 호출할 함수
-		// USER_TIMER_MINIMUM = 10 밀리초, 0.01s
-		// 실제로 게임 루프를 이렇게 만들지는 않음. 10 밀리초는 길고 메시지 처리가 쌓여있으면 처리가 밀릴 수 있음. 단순히 타이머를 사용해보는 느낌
-		// 메세지 큐에 쌓이는 속도를 의미. 실제로는 초당 60 전후번으로 처리
-	}
-	return 0;
-	case WM_TIMER:
-	{
-		TIME.Update();
-		INPUT.Update();
-		program->Update();
-
-		// WM_PAINT를 클라이언트 영역 전체에서 발생
-		InvalidateRect(hWnd, nullptr, true);
-		UpdateWindow(hWnd);	// 전체 영역에서 메세지를 듣고 있다가, 메시지를 들으면 바로 처리
-	}
-	return 0;
-	case WM_PAINT:	// 기본적으로 있어야 하는 그리기 메시지
-	{
-		PAINTSTRUCT ps;
-		gHDC = BeginPaint(hWnd, &ps);
-
-		// Render 진행
-		// 정석적인 방법은 의존성 주입으로 hdc를 집어넣는 것
-		// 하지만 우선은 전역변수로 처리
-		if(program)
-		program->Render();
-
-		EndPaint(hWnd, &ps);	// EndPaint() 밖에서는 hdc가 유효하지 않음
-	}
-	return 0;
-	case WM_CLOSE:
-	{
-		// 타이머도 일종의 리소스. 해제를 해주어야 함
-		KillTimer(hWnd, 1);	// id가 1번인 타이머가 죽음
-		PostQuitMessage(0);
-	}
-	return 0;
+	case WM_NCCREATE:	// 윈도우가 생성될 때 가장 먼저 생성되는 메시지 중 하나
+		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
+		window = reinterpret_cast<Window*>(pCreate->lpCreateParams);	// this*가 전달된 lpCreateParams를 Window*로 변환
 	}
 	// 처리하고 있지 않는 모든 메시지는 기본 윈도우 프로시저에 전달
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return DefWindowProc(m_hWnd, message, wParam, lParam);
+}
+
+LRESULT Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return LRESULT();
 }
