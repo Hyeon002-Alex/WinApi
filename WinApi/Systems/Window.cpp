@@ -4,45 +4,43 @@
 
 HDC gHDC = nullptr;
 
-// ì™¸ë¶€ì—ì„œ ì´ˆê¸°í™” í•„ìˆ˜
-// make_unique : í”„ë¡œê·¸ëž¨ì´ ì‹œìž‘í•  ë•Œë¶€í„° programì´ ë™ì  í• ë‹¹ëœë‹¤ëŠ” ê²ƒ. ìƒì„±ìžì—ì„œ ë‹¤ë¥¸ ê°ì²´ì™€ ìƒí˜¸ìž‘ìš©í•˜ëŠ” ê³¼ì •ì—ì„œ ì´ˆê¸°í™” ìˆœì„œ ê´€ë ¨í•´ì„œ ê¼¬ì¼ ìˆ˜ë„ ìžˆìŒ
-// ì‹±ê¸€í„´ : ì‹±ê¸€í„´ì€ ì „ì—­ë³€ìˆ˜ ê°™ì€ ê²ƒ. ë‹¤ë¥¸ ë°ì„œ ì“°ê¸°ìœ„í•´ ì‚¬ìš©. programì€ ë‹¤ë¥¸ ê³³ì´ ì•„ë‹Œ Window.cpp ì•ˆì—ì„œë§Œ ì‚¬ìš©ë˜ë©´ ë¨
-// í•˜ì§€ë§Œ ì¼ë‹¨ ì´ˆê¸°í™”ëŠ” í•´ì•¼í•˜ê¸° ë•Œë¬¸ì—, ì¼ë‹¨ nullptrë¡œ ì´ˆê¸°í™”í•˜ê³ , make_unique ì‹œê¸°ëŠ” ë’¤ë¡œ ì¡°ì ˆ
+// ¿ÜºÎ¿¡¼­ ÃÊ±âÈ­ ÇÊ¼ö
+// make_unique : ÇÁ·Î±×·¥ÀÌ ½ÃÀÛÇÒ ¶§ºÎÅÍ programÀÌ µ¿Àû ÇÒ´çµÈ´Ù´Â °Í. »ý¼ºÀÚ¿¡¼­ ´Ù¸¥ °´Ã¼¿Í »óÈ£ÀÛ¿ëÇÏ´Â °úÁ¤¿¡¼­ ÃÊ±âÈ­ ¼ø¼­ °ü·ÃÇØ¼­ ²¿ÀÏ ¼öµµ ÀÖÀ½
+// ½Ì±ÛÅÏ : ½Ì±ÛÅÏÀº Àü¿ªº¯¼ö °°Àº °Í. ´Ù¸¥ µ¥¼­ ¾²±âÀ§ÇØ »ç¿ë. programÀº ´Ù¸¥ °÷ÀÌ ¾Æ´Ñ Window.cpp ¾È¿¡¼­¸¸ »ç¿ëµÇ¸é µÊ
+// ÇÏÁö¸¸ ÀÏ´Ü ÃÊ±âÈ­´Â ÇØ¾ßÇÏ±â ¶§¹®¿¡, ÀÏ´Ü nullptr·Î ÃÊ±âÈ­ÇÏ°í, make_unique ½Ã±â´Â µÚ·Î Á¶Àý
 unique_ptr<Program> Window::program = nullptr;
 
 Window::Window(const WinDesc& initDesc) : desc(initDesc)
 {
-	// ìœˆë„ìš° í´ëž˜ìŠ¤ ë“±ë¡
-	ATOM classId = MyRegisterClass();	// ATOMì€ WORDì™€ ê°™ìŒ. unsigned short. 2ë°”ì´íŠ¸
-	assert(classId != 0);	// ë“±ë¡ ì‹¤íŒ¨
-	// WORDëŠ” ê³¼ê±° cpuê°€ í•œ ë²ˆì— ì²˜ë¦¬í•  ìˆ˜ ìžˆëŠ” ë°ì´í„° í¬ê¸° ë‹¨ìœ„. cpu ë ˆì§€ìŠ¤í„°ê°€ 16ë¹„íŠ¸ì˜€ë˜ ì‹œì ˆ. ì˜¨ê°– ë°ì´í„°ë¥¼ ë‹´ìŒ
-	// ATOMì€ ë” ì´ìƒ ìª¼ê°¤ ìˆ˜ ì—†ëŠ” ë‹¨ìœ„ë¥¼ ë‚˜íƒ€ëƒˆì—ˆìŒ. ìœˆë„ìš° ìš´ì˜ì²´ì œê°€ ê´€ë¦¬í•˜ëŠ” ë¬¸ìžì—´ í•´ì‹œë§µì— ëŒ€í•œ ê²€ìƒ‰í‚¤
+	// À©µµ¿ì Å¬·¡½º µî·Ï
+	ATOM classId = MyRegisterClass();	// ATOMÀº WORD¿Í °°À½. unsigned short. 2¹ÙÀÌÆ®
+	assert(classId != 0);	// µî·Ï ½ÇÆÐ
+	// WORD´Â °ú°Å cpu°¡ ÇÑ ¹ø¿¡ Ã³¸®ÇÒ ¼ö ÀÖ´Â µ¥ÀÌÅÍ Å©±â ´ÜÀ§. cpu ·¹Áö½ºÅÍ°¡ 16ºñÆ®¿´´ø ½ÃÀý. ¿Â°® µ¥ÀÌÅÍ¸¦ ´ãÀ½
+	// ATOMÀº ´õ ÀÌ»ó ÂÉ°¶ ¼ö ¾ø´Â ´ÜÀ§¸¦ ³ªÅ¸³Â¾úÀ½. À©µµ¿ì ¿î¿µÃ¼Á¦°¡ °ü¸®ÇÏ´Â ¹®ÀÚ¿­ ÇØ½Ã¸Ê¿¡ ´ëÇÑ °Ë»öÅ°
 
 	hWnd = CreateWindowExW
 	(
 		WS_EX_APPWINDOW,
 		desc.appName.c_str(),
 		desc.appName.c_str(),
-		WS_OVERLAPPEDWINDOW,	// ìµœìƒìœ„ì°½ ì˜µì…˜
-		CW_USEDEFAULT,	// ê²Œìž„ì—ì„œ ìœ„ì¹˜ë‚˜ ì‚¬ì´ì¦ˆëŠ” ê·¸ëž˜í”½ìœ¼ë¡œ ê·¸ë¦¬ë©´ í•´ê²°
+		WS_OVERLAPPEDWINDOW,	// ÃÖ»óÀ§Ã¢ ¿É¼Ç
+		CW_USEDEFAULT,	// °ÔÀÓ¿¡¼­ À§Ä¡³ª »çÀÌÁî´Â ±×·¡ÇÈÀ¸·Î ±×¸®¸é ÇØ°á
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		nullptr,
 		(HMENU)nullptr,
-		desc.hInstance,	// ì°½ì˜ í•¸ë“¤ì„ í†µí•´ ìž‘ë™í•˜ëŠ” ë°©ì‹. ì´ë ‡ê²Œ í•˜ë©´ ì°½ ì•ˆì—ì„œ ì›¬ë§Œí•œ ê±°ëŠ” ì¶”ê°€ í•¸ë“¤ ìž…ë ¥ ì—†ì´ í•´ê²° ê°€ëŠ¥
+		desc.hInstance,	// Ã¢ÀÇ ÇÚµéÀ» ÅëÇØ ÀÛµ¿ÇÏ´Â ¹æ½Ä. ÀÌ·¸°Ô ÇÏ¸é Ã¢ ¾È¿¡¼­ À¢¸¸ÇÑ °Å´Â Ãß°¡ ÇÚµé ÀÔ·Â ¾øÀÌ ÇØ°á °¡´É
 		nullptr
 	);
 	assert(hWnd != nullptr);
-
-	INPUT.SetWindowHandle(hWnd);	// INPUT í´ëž˜ìŠ¤ì—ì„œ ScreenToClient() í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
 
 	RECT rect = { 0, 0, LONG(desc.width), LONG(desc.height)};
 
 	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, 0);
 
-	//GetSystemMetrics(SM_CXSCREEN);	// í™”ë©´ í•´ìƒë„ì˜ xì¢Œí‘œ
-	//GetSystemMetrics(SM_CYSCREEN);	// í™”ë©´ í•´ìƒë„ì˜ yì¢Œí‘œ
+	//GetSystemMetrics(SM_CXSCREEN);	// È­¸é ÇØ»óµµÀÇ xÁÂÇ¥
+	//GetSystemMetrics(SM_CYSCREEN);	// È­¸é ÇØ»óµµÀÇ yÁÂÇ¥
 
 	const int winWidth = int(rect.right - rect.left);
 	const int winHeight = int(rect.bottom - rect.top);
@@ -56,25 +54,25 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 		y,
 		winWidth,
 		winHeight,
-		true	// ìœˆë„ìš° íŽ˜ì¸íŠ¸ë¼ëŠ” ë©”ì‹œì§€ë¥¼ ë°œìƒì‹œí‚¬ì§€ ì—¬ë¶€
+		true	// À©µµ¿ì ÆäÀÎÆ®¶ó´Â ¸Þ½ÃÁö¸¦ ¹ß»ý½ÃÅ³Áö ¿©ºÎ
 	);
 
-	ShowWindow(hWnd, SW_SHOWNORMAL);	// í™œì„±í™”ì‹œí‚¤ê³  ê·¸ë ¤ì§. WM_PAINT ë°œìƒ
-	UpdateWindow(hWnd);					// WM_PAINTë¥¼ ì¦‰ê°ì ìœ¼ë¡œ ì²˜ë¦¬í•˜ë¼
+	ShowWindow(hWnd, SW_SHOWNORMAL);	// È°¼ºÈ­½ÃÅ°°í ±×·ÁÁü. WM_PAINT ¹ß»ý
+	UpdateWindow(hWnd);					// WM_PAINT¸¦ Áï°¢ÀûÀ¸·Î Ã³¸®ÇÏ¶ó
 
 	ShowCursor(true);
 }
 
 Window::~Window()
 {
-	// ìœˆë„ìš° íŒŒê´´
+	// À©µµ¿ì ÆÄ±«
 	DestroyWindow(hWnd);
-	// ìœˆë„ìš° í´ëž˜ìŠ¤ ë“±ë¡ í•´ì œ
+	// À©µµ¿ì Å¬·¡½º µî·Ï ÇØÁ¦
 	UnregisterClassW(desc.appName.c_str(), desc.hInstance);
 
-	// ì–´ë–¤ ìƒí™©ì—ì„œë„ ìŠ¤íƒ í”„ë ˆìž„ì€ í•´ì œê°€ ë˜ëŠ” ê²ƒì´ ë³´ìž¥ë˜ê¸° ë•Œë¬¸ì—
-	// ìœˆë„ìš°ì˜ íŒŒê´´ì™€ ìœˆë„ìš° í´ëž˜ìŠ¤ ë“±ë¡ í•´ì œê°€ ë³´ìž¥
-	// ìœ ë‹ˆí¬ í¬ì¸í„°ë¡œ ìœˆë„ìš°ë¥¼ ê´€ë¦¬í•˜ëŠ” ê²ƒì´ ì•ˆì „
+	// ¾î¶² »óÈ²¿¡¼­µµ ½ºÅÃ ÇÁ·¹ÀÓÀº ÇØÁ¦°¡ µÇ´Â °ÍÀÌ º¸ÀåµÇ±â ¶§¹®¿¡
+	// À©µµ¿ìÀÇ ÆÄ±«¿Í À©µµ¿ì Å¬·¡½º µî·Ï ÇØÁ¦°¡ º¸Àå
+	// À¯´ÏÅ© Æ÷ÀÎÅÍ·Î À©µµ¿ì¸¦ °ü¸®ÇÏ´Â °ÍÀÌ ¾ÈÀü
 }
 
 ATOM Window::MyRegisterClass()
@@ -83,18 +81,18 @@ ATOM Window::MyRegisterClass()
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style = CS_HREDRAW | CS_VREDRAW;	// ìˆ˜í‰, ìˆ˜ì§ ë°©í–¥ìœ¼ë¡œ í¬ê¸° ë³€ê²½ ì‹œ ë‹¤ì‹œ ê·¸ë¦¬ê¸°
+	wcex.style = CS_HREDRAW | CS_VREDRAW;	// ¼öÆò, ¼öÁ÷ ¹æÇâÀ¸·Î Å©±â º¯°æ ½Ã ´Ù½Ã ±×¸®±â
 	wcex.lpfnWndProc = WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = desc.hInstance;
-	wcex.hIcon = LoadIcon(nullptr, IDI_WINLOGO);	// nullptrì´ë©´ ê¸°ë³¸ì´ ë“¤ì–´ê°. ì•„ì´ì½˜ì€ ìž‘ì—…í‘œì‹œì¤„ì— ë³´ì´ëŠ” ì•„ì´ì½˜
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);	// í”„ë¡œê·¸ëž¨ ë‚´ë¶€ì—ì„œ ë³´ì¼ ë§ˆìš°ìŠ¤ ì»¤ì„œ. ê²Œìž„ì—ì„œëŠ” ê·¸ëž˜í”½ìœ¼ë¡œ ê·¸ë ¤ì„œ ì‚¬ìš©
-	wcex.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);	// ìœˆë„ìš° ì°½ì˜ ê¸°ë³¸ ìƒ‰ìƒ. í´ë¼ì´ì–¸íŠ¸ ì˜ì—­ì˜ ë°°ê²½ìƒ‰
-																// osì˜ gdië¥¼ ì‚¬ìš©í•´ ê·¸ë¦¬ëŠ” ë°©ì‹.
+	wcex.hIcon = LoadIcon(nullptr, IDI_WINLOGO);	// nullptrÀÌ¸é ±âº»ÀÌ µé¾î°¨. ¾ÆÀÌÄÜÀº ÀÛ¾÷Ç¥½ÃÁÙ¿¡ º¸ÀÌ´Â ¾ÆÀÌÄÜ
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);	// ÇÁ·Î±×·¥ ³»ºÎ¿¡¼­ º¸ÀÏ ¸¶¿ì½º Ä¿¼­. °ÔÀÓ¿¡¼­´Â ±×·¡ÇÈÀ¸·Î ±×·Á¼­ »ç¿ë
+	wcex.hbrBackground = (HBRUSH)GetStockObject(GRAY_BRUSH);	// À©µµ¿ì Ã¢ÀÇ ±âº» »ö»ó. Å¬¶óÀÌ¾ðÆ® ¿µ¿ªÀÇ ¹è°æ»ö
+																// osÀÇ gdi¸¦ »ç¿ëÇØ ±×¸®´Â ¹æ½Ä.
 	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = desc.appName.c_str();	// wstringì— ëŒ€í•œ cìŠ¤íƒ€ì¼ì˜ ë¡±í¬ì¸í„° ìš”êµ¬. .c_str()ìœ¼ë¡œ ë³€í™˜ .data()ì˜ ë°©ì‹ê³¼ ë¹„ìŠ·
-	wcex.hIconSm = wcex.hIcon;	// ìœˆë„ìš° ì°½ ì¢Œì¸¡ ìƒë‹¨ì— ë³´ì´ëŠ” ì•„ì´ì½˜. ìž‘ì—…í‘œì‹œì¤„ ì•„ì´ì½˜ê³¼ ë™ì¼í•˜ê²Œ ì„¤ì •
+	wcex.lpszClassName = desc.appName.c_str();	// wstring¿¡ ´ëÇÑ c½ºÅ¸ÀÏÀÇ ·ÕÆ÷ÀÎÅÍ ¿ä±¸. .c_str()À¸·Î º¯È¯ .data()ÀÇ ¹æ½Ä°ú ºñ½Á
+	wcex.hIconSm = wcex.hIcon;	// À©µµ¿ì Ã¢ ÁÂÃø »ó´Ü¿¡ º¸ÀÌ´Â ¾ÆÀÌÄÜ. ÀÛ¾÷Ç¥½ÃÁÙ ¾ÆÀÌÄÜ°ú µ¿ÀÏÇÏ°Ô ¼³Á¤
 
 	return RegisterClassExW(&wcex);
 }
@@ -102,55 +100,42 @@ ATOM Window::MyRegisterClass()
 WPARAM Window::Run()
 {
 	program = make_unique<Program>();
+	INPUT.Init(hWnd);
 
 	MSG msg;
 	
-	SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);	// í•¸ë“¤, zì˜¤ë”, ìœ„ì¹˜-í¬ê¸°, í”Œëž˜ê·¸
-	SetForegroundWindow(hWnd);	// ìµœìƒë‹¨ í‘œì‹œê¶Œí•œ. Focusì™€ ë¹„ìŠ·. ì‹œê°ì ìœ¼ë¡œ ìœ„ë¡œ ëŒì–´ì˜¬ë¦¬ë¼ëŠ” ì˜ë¯¸
-	SetFocus(hWnd);				// í¬ì»¤ìŠ¤ë¥¼ ì£¼ë¼ëŠ” ì˜ë¯¸. ë…¼ë¦¬ì  í•´ê²°. ë³´í†µ ë‘˜ ì¤‘ í•˜ë‚˜ë§Œ í•´ë„ í•´ê²°ì´ ë¨
+	SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);	// ÇÚµé, z¿À´õ, À§Ä¡-Å©±â, ÇÃ·¡±×
+	SetForegroundWindow(hWnd);	// ÃÖ»ó´Ü Ç¥½Ã±ÇÇÑ. Focus¿Í ºñ½Á. ½Ã°¢ÀûÀ¸·Î À§·Î ²ø¾î¿Ã¸®¶ó´Â ÀÇ¹Ì
+	SetFocus(hWnd);				// Æ÷Ä¿½º¸¦ ÁÖ¶ó´Â ÀÇ¹Ì. ³í¸®Àû ÇØ°á. º¸Åë µÑ Áß ÇÏ³ª¸¸ ÇØµµ ÇØ°áÀÌ µÊ
 
 	while (true)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT)	// WM_QUITì„ í™œìš©í•œ ë¬´í•œë£¨í”„ íƒˆì¶œ
+			if (msg.message == WM_QUIT)	// WM_QUITÀ» È°¿ëÇÑ ¹«ÇÑ·çÇÁ Å»Ãâ
 				break;
 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		// í”„ë¡œê·¸ëž¨ì„ ëŒë¦´ í…ë°, ì œí•œì´ ì—†ê¸° ë•Œë¬¸ì— ì„±ëŠ¥ì— ë”°ë¼ ëª‡ì²œ í”„ë ˆìž„ì´ ë‚˜ì˜¬ ìˆ˜ë„ ìžˆìŒ
-		// dxì—ì„œëŠ” ì•Œì•„ì„œ ìˆ˜ì§ ë™ê¸°í™” ì˜µì…˜ì´ ìŠ¤ì™‘ ì²´ì¸ì´ ë“¤ì–´ê°€ ìžˆìŒ
-		// ì§€ê¸ˆì€ ì¡°ê¸ˆ ë” api ê¸°ëŠ¥ì„ í™œìš©í•´ í”„ë ˆìž„ ì œí•œì„ ì‹œë„í•´ ë³¼ ê²ƒ
+		// ÇÁ·Î±×·¥À» µ¹¸± ÅÙµ¥, Á¦ÇÑÀÌ ¾ø±â ¶§¹®¿¡ ¼º´É¿¡ µû¶ó ¸îÃµ ÇÁ·¹ÀÓÀÌ ³ª¿Ã ¼öµµ ÀÖÀ½
+		// dx¿¡¼­´Â ¾Ë¾Æ¼­ ¼öÁ÷ µ¿±âÈ­ ¿É¼ÇÀÌ ½º¿Ò Ã¼ÀÎÀÌ µé¾î°¡ ÀÖÀ½
+		// Áö±ÝÀº Á¶±Ý ´õ api ±â´ÉÀ» È°¿ëÇØ ÇÁ·¹ÀÓ Á¦ÇÑÀ» ½ÃµµÇØ º¼ °Í
 	}
 
-	return msg.wParam;	// ë£¨í”„ê°€ ëë‚¬ë‹¤ëŠ” ì˜ë¯¸
+	return msg.wParam;	// ·çÇÁ°¡ ³¡³µ´Ù´Â ÀÇ¹Ì
 }
 
 LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	/*
-	static POINT mousePos{};	// ê³„ì† ì´ˆê¸°í™”ë˜ë©´ ê³¤ëž€í•˜ë¯€ë¡œ static
-	static wstring mouseStr{};
-	static RECT mouseRect{ 5, 5, 110, 20 };	// (5,5)ì—ì„œ ì‹œìž‘í•´ì„œ ê°€ë¡œ 105, ì„¸ë¡œ 15 í¬ê¸°
-
-	static POINT startPos{};
-	static POINT endPos{};
-	static RECT objRect{};
-
-	static UINT selection = 1;
-	static wstring selStr = L"ì„  ê·¸ë¦¬ê¸° ëª¨ë“œ";
-	static RECT selRect{ WIN_DEFAULT_WIDTH - 175, 5, WIN_DEFAULT_WIDTH - 5, 20 };
-	*/
-
 	switch (message)
 	{
-	case WM_CREATE:	// ìœˆë„ìš° ì°½ì„ ìƒì„±í•  ë•Œ ë°œìƒí•˜ëŠ” ë©”ì‹œì§€. ìƒì„±ìž ê°™ì€ ëŠë‚Œ. ì‹œê°„ì°¨ê°€ ì•„ì–˜ ì—†ì§€ëŠ” ì•ŠìŒ. ì—¬ëŸ¬ ê²ƒë“¤ì„ ì´ˆê¸°í™”í•˜ëŠ” ìš©ë„
+	case WM_CREATE:	// À©µµ¿ì Ã¢À» »ý¼ºÇÒ ¶§ ¹ß»ýÇÏ´Â ¸Þ½ÃÁö. »ý¼ºÀÚ °°Àº ´À³¦. ½Ã°£Â÷°¡ ¾Æ¾ê ¾øÁö´Â ¾ÊÀ½. ¿©·¯ °ÍµéÀ» ÃÊ±âÈ­ÇÏ´Â ¿ëµµ
 	{
-		SetTimer(hWnd, 1, USER_TIMER_MINIMUM, nullptr);	// ìœˆë„ìš° í•¸ë“¤, ì´ë²¤íŠ¸ ì•„ì´ë””, ì–´ëŠì •ë„ í˜ë €ì„ ë•Œ ë©”ì‹œì§€ë¥¼ ë°œìƒ ì‹œí‚¬ ê²ƒì¸ì§€, ë©”ì‹œì§€ê°€ ë°œìƒí–ˆì„ ë•Œ í˜¸ì¶œí•  í•¨ìˆ˜
-		// USER_TIMER_MINIMUM = 10 ë°€ë¦¬ì´ˆ, 0.01s
-		// ì‹¤ì œë¡œ ê²Œìž„ ë£¨í”„ë¥¼ ì´ë ‡ê²Œ ë§Œë“¤ì§€ëŠ” ì•ŠìŒ. 10 ë°€ë¦¬ì´ˆëŠ” ê¸¸ê³  ë©”ì‹œì§€ ì²˜ë¦¬ê°€ ìŒ“ì—¬ìžˆìœ¼ë©´ ì²˜ë¦¬ê°€ ë°€ë¦´ ìˆ˜ ìžˆìŒ. ë‹¨ìˆœížˆ íƒ€ì´ë¨¸ë¥¼ ì‚¬ìš©í•´ë³´ëŠ” ëŠë‚Œ
-		// ë©”ì„¸ì§€ íì— ìŒ“ì´ëŠ” ì†ë„ë¥¼ ì˜ë¯¸. ì‹¤ì œë¡œëŠ” ì´ˆë‹¹ 60 ì „í›„ë²ˆìœ¼ë¡œ ì²˜ë¦¬
+		SetTimer(hWnd, 1, USER_TIMER_MINIMUM, nullptr);	// À©µµ¿ì ÇÚµé, ÀÌº¥Æ® ¾ÆÀÌµð, ¾î´ÀÁ¤µµ Èê·¶À» ¶§ ¸Þ½ÃÁö¸¦ ¹ß»ý ½ÃÅ³ °ÍÀÎÁö, ¸Þ½ÃÁö°¡ ¹ß»ýÇßÀ» ¶§ È£ÃâÇÒ ÇÔ¼ö
+		// USER_TIMER_MINIMUM = 10 ¹Ð¸®ÃÊ, 0.01s
+		// ½ÇÁ¦·Î °ÔÀÓ ·çÇÁ¸¦ ÀÌ·¸°Ô ¸¸µéÁö´Â ¾ÊÀ½. 10 ¹Ð¸®ÃÊ´Â ±æ°í ¸Þ½ÃÁö Ã³¸®°¡ ½×¿©ÀÖÀ¸¸é Ã³¸®°¡ ¹Ð¸± ¼ö ÀÖÀ½. ´Ü¼øÈ÷ Å¸ÀÌ¸Ó¸¦ »ç¿ëÇØº¸´Â ´À³¦
+		// ¸Þ¼¼Áö Å¥¿¡ ½×ÀÌ´Â ¼Óµµ¸¦ ÀÇ¹Ì. ½ÇÁ¦·Î´Â ÃÊ´ç 60 ÀüÈÄ¹øÀ¸·Î Ã³¸®
 	}
 	return 0;
 	case WM_TIMER:
@@ -159,181 +144,33 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		INPUT.Update();
 		program->Update();
 
-		// WM_PAINTë¥¼ í´ë¼ì´ì–¸íŠ¸ ì˜ì—­ ì „ì²´ì—ì„œ ë°œìƒ
+		// WM_PAINT¸¦ Å¬¶óÀÌ¾ðÆ® ¿µ¿ª ÀüÃ¼¿¡¼­ ¹ß»ý
 		InvalidateRect(hWnd, nullptr, true);
-		UpdateWindow(hWnd);	// ì „ì²´ ì˜ì—­ì—ì„œ ë©”ì„¸ì§€ë¥¼ ë“£ê³  ìžˆë‹¤ê°€, ë©”ì‹œì§€ë¥¼ ë“¤ìœ¼ë©´ ë°”ë¡œ ì²˜ë¦¬
+		UpdateWindow(hWnd);	// ÀüÃ¼ ¿µ¿ª¿¡¼­ ¸Þ¼¼Áö¸¦ µè°í ÀÖ´Ù°¡, ¸Þ½ÃÁö¸¦ µéÀ¸¸é ¹Ù·Î Ã³¸®
 	}
 	return 0;
-	case WM_PAINT:	// ê¸°ë³¸ì ìœ¼ë¡œ ìžˆì–´ì•¼ í•˜ëŠ” ê·¸ë¦¬ê¸° ë©”ì‹œì§€
+	case WM_PAINT:	// ±âº»ÀûÀ¸·Î ÀÖ¾î¾ß ÇÏ´Â ±×¸®±â ¸Þ½ÃÁö
 	{
 		PAINTSTRUCT ps;
-		//HDC hdc = BeginPaint(hWnd, &ps);
 		gHDC = BeginPaint(hWnd, &ps);
-		/*
-		using namespace GDIUtils;
-		switch (selection)
-		{
-		case 1:
-		{
-			DrawLine(hdc, objRect);
-			break;
-		}
-		case 2:
-		{
-			DrawRect(hdc, objRect);
-			break;
-		}
-		case 3:
-		{
-			DrawCircle(hdc, objRect);
-		}
-		}
 
-		DrawText(hdc, mouseStr.c_str(), -1, &mouseRect, DT_LEFT);	// -1ì€ ë„ ë¬¸ìžì—´ì´ ë‚˜ì˜¤ê¸° ì „ê¹Œì§€ ìžë™ìœ¼ë¡œ ê¸¸ì´ë¥¼ ê³„ì‚°í•¨
-		DrawText(hdc, selStr.c_str(), -1, &selRect, DT_RIGHT);
-		*/
-
-		// Render ì§„í–‰
-		// ì •ì„ì ì¸ ë°©ë²•ì€ ì˜ì¡´ì„± ì£¼ìž…ìœ¼ë¡œ hdcë¥¼ ì§‘ì–´ë„£ëŠ” ê²ƒ
-		// í•˜ì§€ë§Œ ìš°ì„ ì€ ì „ì—­ë³€ìˆ˜ë¡œ ì²˜ë¦¬
+		// Render ÁøÇà
+		// Á¤¼®ÀûÀÎ ¹æ¹ýÀº ÀÇÁ¸¼º ÁÖÀÔÀ¸·Î hdc¸¦ Áý¾î³Ö´Â °Í
+		// ÇÏÁö¸¸ ¿ì¼±Àº Àü¿ªº¯¼ö·Î Ã³¸®
 		if(program)
 		program->Render();
 
-		EndPaint(hWnd, &ps);	// EndPaint() ë°–ì—ì„œëŠ” hdcê°€ ìœ íš¨í•˜ì§€ ì•ŠìŒ
+		EndPaint(hWnd, &ps);	// EndPaint() ¹Û¿¡¼­´Â hdc°¡ À¯È¿ÇÏÁö ¾ÊÀ½
 	}
 	return 0;
-	/*
-	case WM_MOUSEMOVE:
-	{
-		mousePos.x = GET_X_LPARAM(lParam);
-		mousePos.y = GET_Y_LPARAM(lParam);
-		mouseStr = L"X : " + to_wstring(mousePos.x) + L" Y : " + to_wstring(mousePos.y);
-
-		InvalidateRect(hWnd, &mouseRect, TRUE);	// ì§€ì •ëœ ì˜ì—­ì„ ë¬´íš¨í™”ì‹œì¼œ ë‹¤ì‹œ ê·¸ë¦¬ë„ë¡ í•¨. TRUEë©´ ì›ëž˜ ìžë¦¬ì— ìžˆë˜ ê²ƒì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
-	}
-	return 0;
-	case WM_LBUTTONDOWN:
-	{
-		startPos = mousePos;
-	}
-	return 0;
-	case WM_LBUTTONUP:
-	{
-		endPos = mousePos;
-		objRect = { startPos.x, startPos.y, endPos.x, endPos.y };
-
-		InvalidateRect(hWnd, nullptr, TRUE);	// nullptrì´ë©´ ì „ì²´ ì˜ì—­ì„ ë‹¤ì‹œ ê·¸ë¦¼
-	}
-	return 0;
-	case WM_KEYDOWN:
-	{
-		switch (wParam)
-		{
-		case 'W':
-		{
-			objRect.top -= 5;
-			objRect.bottom -= 5;
-			break;
-		}
-		case 'S':
-		{
-			objRect.top += 5;
-			objRect.bottom += 5;
-			break;
-		}
-		case 'A':
-		{
-			objRect.left -= 5;
-			objRect.right -= 5;
-			break;
-		}
-		case 'D':
-		{
-			objRect.left += 5;
-			objRect.right += 5;
-			break;
-		}
-		//---//
-		case '1':
-		{
-			selection = 1;
-			selStr = L"ì„  ê·¸ë¦¬ê¸° ëª¨ë“œ";
-			break;
-		}
-		case '2':
-		{
-			selection = 2;
-			selStr = L"ì‚¬ê°í˜• ê·¸ë¦¬ê¸° ëª¨ë“œ";
-			break;
-		}
-		case '3':
-		{
-			selection = 3;
-			selStr = L"ì› ê·¸ë¦¬ê¸° ëª¨ë“œ";
-			break;
-		}
-		}
-		InvalidateRect(hWnd, nullptr, TRUE);
-
-		/*switch (wParam)
-		{
-		case 'W':
-		{
-			objRect.top -= 10;
-			objRect.bottom -= 10;
-			if (objRect.top < 0)
-			{
-				objRect.top = 0;
-				objRect.bottom = objRect.top + (endPos.y - startPos.y);
-			}
-			break;
-		}
-		case 'A':
-		{
-			objRect.left -= 10;
-			objRect.right -= 10;
-			if (objRect.left < 0)
-			{
-				objRect.left = 0;
-				objRect.right = objRect.left + (endPos.x - startPos.x);
-			}
-			break;
-		}
-		case 'S':
-		{
-			objRect.bottom += 10;
-			objRect.top += 10;
-			if(objRect.bottom > WIN_DEFAULT_HEIGHT)
-			{
-				objRect.bottom = WIN_DEFAULT_HEIGHT;
-				objRect.top = objRect.bottom - (endPos.y - startPos.y);
-			}
-			break;
-		}
-		case 'D':
-		{
-			objRect.right += 10;
-			objRect.left += 10;
-			if (objRect.right > WIN_DEFAULT_WIDTH)
-			{
-				objRect.right = WIN_DEFAULT_WIDTH;
-				objRect.left = objRect.right - (endPos.x - startPos.x);
-			}
-			break;
-		}
-		}
-		InvalidateRect(hWnd, nullptr, TRUE);
-	}
-	return 0;
-	*/
 	case WM_CLOSE:
 	{
-		// íƒ€ì´ë¨¸ë„ ì¼ì¢…ì˜ ë¦¬ì†ŒìŠ¤. í•´ì œë¥¼ í•´ì£¼ì–´ì•¼ í•¨
-		KillTimer(hWnd, 1);	// idê°€ 1ë²ˆì¸ íƒ€ì´ë¨¸ê°€ ì£½ìŒ
+		// Å¸ÀÌ¸Óµµ ÀÏÁ¾ÀÇ ¸®¼Ò½º. ÇØÁ¦¸¦ ÇØÁÖ¾î¾ß ÇÔ
+		KillTimer(hWnd, 1);	// id°¡ 1¹øÀÎ Å¸ÀÌ¸Ó°¡ Á×À½
 		PostQuitMessage(0);
 	}
 	return 0;
 	}
-	// ì²˜ë¦¬í•˜ê³  ìžˆì§€ ì•ŠëŠ” ëª¨ë“  ë©”ì‹œì§€ëŠ” ê¸°ë³¸ ìœˆë„ìš° í”„ë¡œì‹œì €ì— ì „ë‹¬
+	// Ã³¸®ÇÏ°í ÀÖÁö ¾Ê´Â ¸ðµç ¸Þ½ÃÁö´Â ±âº» À©µµ¿ì ÇÁ·Î½ÃÀú¿¡ Àü´Þ
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

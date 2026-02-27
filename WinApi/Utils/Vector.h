@@ -12,6 +12,7 @@ struct Vector2
 	constexpr Vector2(int x, int y) : Vector2(static_cast<float>(x), static_cast<float>(y)) {}
 	constexpr Vector2(int x, float y) : Vector2(static_cast<float>(x), y) {}
 	constexpr Vector2(float x, int y) : Vector2(x, static_cast<float>(y)) {}
+	constexpr Vector2(POINT pt) : Vector2(static_cast<float>(pt.x), static_cast<float>(pt.y)) {}
 
 	// ¿¬»êÀÚ
 	Vector2 operator+(Vector2 other) const

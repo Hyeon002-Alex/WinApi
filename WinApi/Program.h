@@ -14,4 +14,6 @@ public:
 private:
 	unique_ptr<Rect> rect1;
 	unique_ptr<Rect> rect2;
+
+	bool isDragging = false;
 };
