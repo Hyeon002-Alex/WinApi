@@ -35,8 +35,6 @@ Window::Window(const WinDesc& initDesc) : desc(initDesc)
 	);
 	assert(hWnd != nullptr);
 
-	//INPUT.SetWindowHandle(hWnd);	// Input 클래스에서 ScreenToClient() 함수를 사용하기 위해 윈도우 핸들을 전달
-
 	RECT rect = { 0, 0, LONG(desc.width), LONG(desc.height)};
 
 	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, 0);
@@ -130,20 +128,6 @@ WPARAM Window::Run()
 
 LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	/*
-	static POINT mousePos{};	// 계속 초기화되면 곤란하므로 static
-	static wstring mouseStr{};
-	static RECT mouseRect{ 5, 5, 110, 20 };	// (5,5)에서 시작해서 가로 105, 세로 15 크기
-
-	static POINT startPos{};
-	static POINT endPos{};
-	static RECT objRect{};
-
-	static UINT selection = 1;
-	static wstring selStr = L"선 그리기 모드";
-	static RECT selRect{ WIN_DEFAULT_WIDTH - 175, 5, WIN_DEFAULT_WIDTH - 5, 20 };
-	*/
-
 	switch (message)
 	{
 	case WM_CREATE:	// 윈도우 창을 생성할 때 발생하는 메시지. 생성자 같은 느낌. 시간차가 아얘 없지는 않음. 여러 것들을 초기화하는 용도
@@ -168,31 +152,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:	// 기본적으로 있어야 하는 그리기 메시지
 	{
 		PAINTSTRUCT ps;
-		//HDC hdc = BeginPaint(hWnd, &ps);
 		gHDC = BeginPaint(hWnd, &ps);
-		/*
-		using namespace GDIUtils;
-		switch (selection)
-		{
-		case 1:
-		{
-			DrawLine(hdc, objRect);
-			break;
-		}
-		case 2:
-		{
-			DrawRect(hdc, objRect);
-			break;
-		}
-		case 3:
-		{
-			DrawCircle(hdc, objRect);
-		}
-		}
-
-		DrawText(hdc, mouseStr.c_str(), -1, &mouseRect, DT_LEFT);	// -1은 널 문자열이 나오기 전까지 자동으로 길이를 계산함
-		DrawText(hdc, selStr.c_str(), -1, &selRect, DT_RIGHT);
-		*/
 
 		// Render 진행
 		// 정석적인 방법은 의존성 주입으로 hdc를 집어넣는 것
@@ -203,130 +163,6 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);	// EndPaint() 밖에서는 hdc가 유효하지 않음
 	}
 	return 0;
-	/*
-	case WM_MOUSEMOVE:
-	{
-		mousePos.x = GET_X_LPARAM(lParam);
-		mousePos.y = GET_Y_LPARAM(lParam);
-		mouseStr = L"X : " + to_wstring(mousePos.x) + L" Y : " + to_wstring(mousePos.y);
-
-		InvalidateRect(hWnd, &mouseRect, TRUE);	// 지정된 영역을 무효화시켜 다시 그리도록 함. TRUE면 원래 자리에 있던 것을 지우고 다시 그림
-	}
-	return 0;
-	case WM_LBUTTONDOWN:
-	{
-		startPos = mousePos;
-	}
-	return 0;
-	case WM_LBUTTONUP:
-	{
-		endPos = mousePos;
-		objRect = { startPos.x, startPos.y, endPos.x, endPos.y };
-
-		InvalidateRect(hWnd, nullptr, TRUE);	// nullptr이면 전체 영역을 다시 그림
-	}
-	return 0;
-	case WM_KEYDOWN:
-	{
-		switch (wParam)
-		{
-		case 'W':
-		{
-			objRect.top -= 5;
-			objRect.bottom -= 5;
-			break;
-		}
-		case 'S':
-		{
-			objRect.top += 5;
-			objRect.bottom += 5;
-			break;
-		}
-		case 'A':
-		{
-			objRect.left -= 5;
-			objRect.right -= 5;
-			break;
-		}
-		case 'D':
-		{
-			objRect.left += 5;
-			objRect.right += 5;
-			break;
-		}
-		//---//
-		case '1':
-		{
-			selection = 1;
-			selStr = L"선 그리기 모드";
-			break;
-		}
-		case '2':
-		{
-			selection = 2;
-			selStr = L"사각형 그리기 모드";
-			break;
-		}
-		case '3':
-		{
-			selection = 3;
-			selStr = L"원 그리기 모드";
-			break;
-		}
-		}
-		InvalidateRect(hWnd, nullptr, TRUE);
-
-		/*switch (wParam)
-		{
-		case 'W':
-		{
-			objRect.top -= 10;
-			objRect.bottom -= 10;
-			if (objRect.top < 0)
-			{
-				objRect.top = 0;
-				objRect.bottom = objRect.top + (endPos.y - startPos.y);
-			}
-			break;
-		}
-		case 'A':
-		{
-			objRect.left -= 10;
-			objRect.right -= 10;
-			if (objRect.left < 0)
-			{
-				objRect.left = 0;
-				objRect.right = objRect.left + (endPos.x - startPos.x);
-			}
-			break;
-		}
-		case 'S':
-		{
-			objRect.bottom += 10;
-			objRect.top += 10;
-			if(objRect.bottom > WIN_DEFAULT_HEIGHT)
-			{
-				objRect.bottom = WIN_DEFAULT_HEIGHT;
-				objRect.top = objRect.bottom - (endPos.y - startPos.y);
-			}
-			break;
-		}
-		case 'D':
-		{
-			objRect.right += 10;
-			objRect.left += 10;
-			if (objRect.right > WIN_DEFAULT_WIDTH)
-			{
-				objRect.right = WIN_DEFAULT_WIDTH;
-				objRect.left = objRect.right - (endPos.x - startPos.x);
-			}
-			break;
-		}
-		}
-		InvalidateRect(hWnd, nullptr, TRUE);
-	}
-	return 0;
-	*/
 	case WM_CLOSE:
 	{
 		// 타이머도 일종의 리소스. 해제를 해주어야 함
